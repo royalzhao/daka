@@ -1,0 +1,11 @@
+ul{
+    list-style-type: none;
+}
+.mu-item-right{
+    top:-10px !important;
+    width: 50px !important;
+}
+.bottom .mu-item-right{
+    top:0px !important;
+    width: 50px !important;
+}
