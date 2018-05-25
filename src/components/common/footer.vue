@@ -8,10 +8,21 @@
     </div>
 </template>
 <script>
+    import store from '@/vuex/store'
+    import { mapGetters, mapActions,mapState } from 'vuex'
     export default {
       data () {
         return {
-          activeTab: 'tab1'
+          
+        }
+      },
+      computed: {
+        activeTab:{
+            get: function () {
+                return this.$store.state.activeTab;
+            },
+            set: function () {
+            }
         }
       },
       methods: {
@@ -20,14 +31,18 @@
         },
         goMain(){
             this.$router.push({name:'main'})
+            this.$store.commit('change','tab1')
         },
         goLive(){
             this.$router.push({name:'live'})
+            this.$store.commit('change','tab2')
         },
         goMe(){
             this.$router.push({name:'me'})
+            this.$store.commit('change','tab3')
         },
 
-      }
+      },
+      store
     }
 </script>

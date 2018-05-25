@@ -9,3 +9,7 @@ ul{
     top:0px !important;
     width: 50px !important;
 }
+.mu-card-title-container .mu-card-title{
+    color: #fff !important;
+    text-align: center;
+}

@@ -7,7 +7,7 @@
         </mu-tabs>
         <div v-if="activeTab === 'tab1'">
         <p>
-            <mobile-tear-sheet>
+            
                 <mu-list>
                   <mu-list-item title="张三">
                     <mu-avatar src="../../../static/img/avatar1.jpg" slot="leftAvatar"/>
@@ -43,7 +43,7 @@
                     <span slot="right" class="time">一周前</span>
                   </mu-list-item>
                 </mu-list>
-            </mobile-tear-sheet>
+            
         </p>
         </div>
         <div v-if="activeTab === 'tab2'">

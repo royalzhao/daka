@@ -4,6 +4,10 @@ import index from '@/components/index'
 import main from '@/components/page/main'
 import live from '@/components/page/live'
 import me from '@/components/page/me'
+import bindPhone from '@/components/page/bindPhone'
+import updatePassword from '@/components/page/updatePassword'
+import wallet from '@/components/page/wallet'
+import personalInfo from '@/components/page/personalInfo'
 
 Vue.use(Router)
 
@@ -27,8 +31,25 @@ const routes=[
         name:'live',
         component:live
       },
+      
     ]
-  }
+  },{
+    path: '/bindPhone',//绑定手机
+    name:'bindPhone',
+    component: bindPhone
+  },{
+    path: '/updatePassword',//修改密码
+    name:'updatePassword',
+    component: updatePassword
+  },{
+    path:'/wallet',
+    name:'wallet',
+    component:wallet
+  },{
+    path:'/personalInfo',
+    name:'personalInfo',
+    component:personalInfo
+  },
 ];
 
 const router = new Router({

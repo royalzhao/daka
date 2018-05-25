@@ -1,12 +1,13 @@
 <template>
     <div class="scroll">
-        <ul id="con1" ref="con1" :class="{anim:animate==true}">
+        <ul ref="con1" id="con1" :class="{anim:animate==true}">
             <li v-for='item in items'>
                 恭喜<span style="color:rgb(33,150,243)">{{item.name}}</span>获得<span style="color:rgb(33,150,243)">{{item.award}}</span>
             </li>
         </ul>
     </div>
 </template>
+
 <script>
         
 export default {
@@ -29,12 +30,13 @@ export default {
             ]
         }
         },
-        created(){
+        mounted(){
             setInterval(this.scroll,1000) // 在钩子函数中调用我在method 里面写的scroll()方法，注意此处不要忘记加this,我在这个位置掉了好几次坑，都是因为忘记写this。
+            //console.log(this.$refs.con1.style.cssText)
         },
         methods: {
             scroll(){
-                let con1 = this.$refs.con1;
+                let con1 = document.querySelector('#con1');
                 con1.style.marginTop='-30px';
                 this.animate=!this.animate;
                 var that = this; // 在异步函数中会出现this的偏移问题，此处一定要先保存好this的指向

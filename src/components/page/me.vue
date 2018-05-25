@@ -42,43 +42,44 @@
                     已有{{signUser}}位用户签到
                 </div>
             </div>
-            <mobile-tear-sheet>
-                <mu-list>
-                    <mu-divider />
-                    <mu-list-item title="交易记录">
-                    <i slot="left" class="iconfont icon-dingdan"/></i>
-                    <i slot="right" class="iconfont icon-arrow-right-copy"/></i>
-                    </mu-list-item>
-                    <mu-divider />
-                    <mu-list-item title="绑定手机">
-                    <i slot="left" class="iconfont icon-shouji"/></i>
-                    <i slot="right" class="iconfont icon-arrow-right-copy"/></i>
-                    </mu-list-item>
-                    <mu-divider />
-                    <mu-list-item title="修改密码">
-                    <i slot="left" class="iconfont icon-suo"/></i>
-                    <i slot="right" class="iconfont icon-arrow-right-copy"/></i>
-                    </mu-list-item>
-                    <mu-divider />
-                    <mu-list-item title="我的钱包">
-                    <i slot="left" class="iconfont icon-qianbao"/></i>
-                    <i slot="right" class="iconfont icon-arrow-right-copy"/></i>
-                    </mu-list-item>
-                    <mu-divider />
-                    <mu-list-item title="个人资料">
-                    <i slot="left" class="iconfont icon-gerenziliao"/></i>
-                    <i slot="right" class="iconfont icon-arrow-right-copy"/></i>
-                    </mu-list-item>
-                </mu-list>
+            
+            <mu-list>
+                <mu-divider />
+                <mu-list-item title="交易记录">
+                <i slot="left" class="iconfont icon-dingdan"/></i>
+                <i slot="right" class="iconfont icon-arrow-right-copy"/></i>
+                </mu-list-item>
+                <mu-divider />
+                <mu-list-item title="绑定手机" to="bindPhone">
+                <i slot="left" class="iconfont icon-shouji"/></i>
+                <i slot="right" class="iconfont icon-arrow-right-copy"/></i>
+                </mu-list-item>
+                <mu-divider />
+                <mu-list-item title="修改密码" to="updatePassword">
+                <i slot="left" class="iconfont icon-suo"/></i>
+                <i slot="right" class="iconfont icon-arrow-right-copy"/></i>
+                </mu-list-item>
+                <mu-divider />
+                <mu-list-item title="我的钱包" to="wallet">
+                <i slot="left" class="iconfont icon-qianbao"/></i>
+                <i slot="right" class="iconfont icon-arrow-right-copy"/></i>
+                </mu-list-item>
+                <mu-divider />
+                <mu-list-item title="个人资料" to="personalInfo">
+                <i slot="left" class="iconfont icon-gerenziliao"/></i>
+                <i slot="right" class="iconfont icon-arrow-right-copy"/></i>
+                </mu-list-item>
+            </mu-list>
                 
                 
-            </mobile-tear-sheet>
+           
         </div>
         
     </div>
 </template>
 <script>
     export default {
+        name: 'me',
         data(){
             return{
                 username:'回忆总想哭',
@@ -177,7 +178,7 @@
     width:200px;
     left: 50%;
     right: 0;
-    bottom: 0px;
+    bottom: 5px;
     margin-left: -100px;
     white-space:nowrap;
     overflow:hidden;
