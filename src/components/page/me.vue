@@ -45,7 +45,7 @@
             
             <mu-list>
                 <mu-divider />
-                <mu-list-item title="交易记录">
+                <mu-list-item title="交易记录" to="record">
                 <i slot="left" class="iconfont icon-dingdan"/></i>
                 <i slot="right" class="iconfont icon-arrow-right-copy"/></i>
                 </mu-list-item>

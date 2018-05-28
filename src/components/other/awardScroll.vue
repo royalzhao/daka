@@ -1,10 +1,17 @@
 <template>
     <div class="scroll">
-        <ul ref="con1" id="con1" :class="{anim:animate==true}">
+        <!-- <ul ref="con1" id="con1" :class="{anim:animate==true}">
             <li v-for='item in items'>
                 恭喜<span style="color:rgb(33,150,243)">{{item.name}}</span>获得<span style="color:rgb(33,150,243)">{{item.award}}</span>
             </li>
-        </ul>
+        </ul> -->
+        <vue-seamless-scroll :data="listData" :class-option="optionSingleHeight" class="seamless-warp">
+            <ul class="item">
+                <li v-for="item in listData">
+                    恭喜<span style="color:rgb(33,150,243)">{{item.name}}</span>获得<span style="color:rgb(33,150,243)">{{item.award}}</span>
+                </li>
+            </ul>
+        </vue-seamless-scroll>
     </div>
 </template>
 
@@ -14,7 +21,7 @@ export default {
     data() {
         return {
             animate:false,
-            items:[  //消息列表对应的数组
+            listData:[  //消息列表对应的数组
                 {
                     name:"马云",
                     award:'派普肽一盒'
@@ -26,14 +33,27 @@ export default {
                 {
                     name:"王勤",
                     award:'派普肽一盒'
-                }
+                },
+                {
+                    name:"王勤",
+                    award:'派普肽一盒'
+                },
+                {
+                    name:"王勤",
+                    award:'派普肽一盒'
+                },
+                {
+                    name:"王勤",
+                    award:'派普肽一盒'
+                },
             ]
         }
         },
         mounted(){
-            setInterval(this.scroll,1000) // 在钩子函数中调用我在method 里面写的scroll()方法，注意此处不要忘记加this,我在这个位置掉了好几次坑，都是因为忘记写this。
+            //setInterval(this.scroll,1000) // 在钩子函数中调用我在method 里面写的scroll()方法，注意此处不要忘记加this,我在这个位置掉了好几次坑，都是因为忘记写this。
             //console.log(this.$refs.con1.style.cssText)
         },
+        
         methods: {
             scroll(){
                 let con1 = document.querySelector('#con1');
@@ -47,7 +67,15 @@ export default {
                     that.animate=!that.animate;  // 这个地方如果不把animate 取反会出现消息回滚的现象，此时把ul 元素的过渡属性取消掉就可以完美实现无缝滚动的效果了
                 },500)
             }
+        },
+        computed: {
+            optionSingleHeight () {
+                return {
+                    singleHeight: 30
+                }
+            }
         }
+       
     }
 </script>
 
@@ -64,6 +92,10 @@ export default {
     overflow: hidden;
     margin: 0 auto;
     transition: all 0.5s;
+}
+.seamless-warp {
+    height: 30px;
+    overflow: hidden;
 }
 .anim{
     transition: all 0.5s;

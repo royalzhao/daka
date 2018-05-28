@@ -54,8 +54,7 @@
        
         
         .Top-Class{
-            background: #f9f9f9;
-            color: #666;
+           
             margin-bottom: 20px;
         }
         p{

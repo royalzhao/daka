@@ -9,6 +9,9 @@ import 'muse-ui/dist/muse-ui.css'
 import 'muse-ui/dist/theme-light.css'
 Vue.use(MuseUI)
 
+import vueSeamlessScroll from 'vue-seamless-scroll'
+Vue.use(vueSeamlessScroll)
+
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */

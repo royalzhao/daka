@@ -8,6 +8,7 @@ import bindPhone from '@/components/page/bindPhone'
 import updatePassword from '@/components/page/updatePassword'
 import wallet from '@/components/page/wallet'
 import personalInfo from '@/components/page/personalInfo'
+import record from '@/components/page/record'
 
 Vue.use(Router)
 
@@ -49,6 +50,10 @@ const routes=[
     path:'/personalInfo',
     name:'personalInfo',
     component:personalInfo
+  },{
+    path:'/record',
+    name:'record',
+    component:record
   },
 ];
 
