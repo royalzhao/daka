@@ -45,12 +45,18 @@
         <div class="block tab-block">
             <main-tab></main-tab>
         </div>
+        <!-- 写留言 -->
         <div class="write">
             <i class="iconfont icon-bi"></i>    
+        </div>
+        <!-- 点击参与 -->
+        <div class="involvement">
+            参与
         </div>
     </div>
 </template>
 <script>
+    import url from '@/serviceAPI.config.js'
     import showCalendar from '../other/calendar.vue'
     import awardScroll from '../other/awardScroll.vue'
     import mainTab from '../other/mainTab.vue'
@@ -60,12 +66,14 @@
                 todayPersonNum:0,
                 totalPerson:2701,
                 totalMoney:721560.00,
-                personPay:210
+                personPay:210,
+                arrDate: [],
             }
         },
         components:{
             showCalendar,awardScroll,mainTab
-        }
+        },
+      
     }
 </script>
 <style scoped>
@@ -137,6 +145,19 @@
     .award{
         margin: 1rem 0 0 0;
     }
+    .involvement {
+        text-align: center;
+        line-height: 40px;
+        width: 40px;
+        height: 40px;
+        border-radius:50%; 
+        box-shadow: 0px 0px 19px 3px #999;
+        position: fixed;
+        bottom: 140px;
+        right: 10px;
+        background: #fff;
+        z-index: 999;
+    }
     .write{
         text-align: center;
         line-height: 40px;
@@ -148,5 +169,6 @@
         bottom: 80px;
         right: 10px;
         background: #fff;
+        z-index: 999;
     }
 </style>

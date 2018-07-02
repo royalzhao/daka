@@ -8,7 +8,7 @@
         <vue-seamless-scroll :data="listData" :class-option="optionSingleHeight" class="seamless-warp">
             <ul class="item">
                 <li v-for="item in listData">
-                    恭喜<span style="color:rgb(33,150,243)">{{item.name}}</span>获得<span style="color:rgb(33,150,243)">{{item.award}}</span>
+                    恭喜<span style="color:rgb(33,150,243)">{{item.nickname}}</span>获得<span style="color:rgb(33,150,243)">{{item.p_name}}</span>
                 </li>
             </ul>
         </vue-seamless-scroll>
@@ -16,45 +16,28 @@
 </template>
 
 <script>
-        
+import url from '@/serviceAPI.config.js'
 export default {
     data() {
         return {
             animate:false,
             listData:[  //消息列表对应的数组
-                {
-                    name:"马云",
-                    award:'派普肽一盒'
-                },
-                {
-                    name:"雷军",
-                    award:'派普肽一盒'
-                },
-                {
-                    name:"王勤",
-                    award:'派普肽一盒'
-                },
-                {
-                    name:"王勤",
-                    award:'派普肽一盒'
-                },
-                {
-                    name:"王勤",
-                    award:'派普肽一盒'
-                },
-                {
-                    name:"王勤",
-                    award:'派普肽一盒'
-                },
+                
             ]
         }
         },
         mounted(){
             //setInterval(this.scroll,1000) // 在钩子函数中调用我在method 里面写的scroll()方法，注意此处不要忘记加this,我在这个位置掉了好几次坑，都是因为忘记写this。
             //console.log(this.$refs.con1.style.cssText)
+            this.init();
         },
         
         methods: {
+            init(){
+                this.$fetch(url.showLuckyUserList).then(res => {
+                   this.listData = res
+                })
+            },
             scroll(){
                 let con1 = document.querySelector('#con1');
                 con1.style.marginTop='-30px';

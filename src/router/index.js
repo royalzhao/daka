@@ -9,6 +9,7 @@ import updatePassword from '@/components/page/updatePassword'
 import wallet from '@/components/page/wallet'
 import personalInfo from '@/components/page/personalInfo'
 import record from '@/components/page/record'
+import notice from '@/components/page/notice'
 
 Vue.use(Router)
 
@@ -54,7 +55,12 @@ const routes=[
     path:'/record',
     name:'record',
     component:record
-  },
+  },{
+    path:'/notice',
+    name:'notice',
+    component:notice
+  
+  }
 ];
 
 const router = new Router({

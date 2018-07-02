@@ -44,6 +44,13 @@
             </div>
             
             <mu-list>
+                  
+                <mu-list-item title="交易通知" to="notice">
+                <i slot="left" class="iconfont icon-tongzhi"/></i>
+
+                <mu-badge content="1" secondary slot="right"/>
+                    
+                </mu-list-item>
                 <mu-divider />
                 <mu-list-item title="交易记录" to="record">
                 <i slot="left" class="iconfont icon-dingdan"/></i>
@@ -241,5 +248,8 @@
 }
 .icon-gerenziliao{
     color: #fe605f;
+}
+.icon-tongzhi{
+    color: rgb(241, 24, 24);
 }
 </style>

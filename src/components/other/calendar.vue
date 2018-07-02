@@ -57,6 +57,8 @@
     </div>
 </template>
 <script>
+    import axios from 'axios'
+    import url from '@/serviceAPI.config.js'
     export default {
         data(){
             return{
@@ -65,59 +67,98 @@
                 currentYear: 1970,
                 currentWeek: 1,
                 days: [],
-                arrDate: [8,10],
-                noSignDate:[9]
+                arrDate: [],
+                noSignDate:[]
             }
         },
-        created: function() {  //在vue初始化时调用
+        mounted(){
             this.initData(null);
+            this.getData();
         },
         methods: {
+            getData:function(){
+                
+                // this.$fetch(url.userSignDate).then(res => {
+                //     var arr = []
+                //     for(let item of res){
+                //         console.log(item)
+                //         arr.push(Number(item.s_date))
+                //     }
+                //     JSON.parse(JSON.stringify(arr));
+                //    this.arrDate = [].concat(arr)
+                  
+                  
+                //    console.log(arr)
+                //     console.log(this.arrDate)
+                   
+                // });
+                
+            },
             initData: function(cur) {
-                var leftcount=0; //存放剩余数量
-                var date;
-                if (cur) {
-                  console.log(cur)
-                    date = new Date(cur);
-                } else {
-                    var now=new Date();
-                    var d = new Date(this.formatDate(now.getFullYear() , now.getMonth() , 1));
-                    d.setDate(42);
-                    date = new Date(this.formatDate(d.getFullYear(),d.getMonth() + 1,1));
-                }
-                this.currentDay = date.getDate();
-                this.currentYear = date.getFullYear();
-                this.currentMonth = date.getMonth() + 1;
+                this.$fetch(url.userSignDate).then(res => {
+                    var arr = []
+                    for(let item of res){
+                        console.log(item)
+                        arr.push(Number(item.s_date))
+                    }
+                   
+                   this.arrDate = [].concat(arr)
+                  
+                   
 
-                this.currentWeek = date.getDay(); // 1...6,0
-                if (this.currentWeek == 0) {
-                    this.currentWeek = 7;
-                }
-                var str = this.formatDate(this.currentYear , this.currentMonth, this.currentDay);
-                this.days.length = 0;
-                // 今天是周日，放在第一行第7个位置，前面6个
-                //初始化本周
-                for (var i = this.currentWeek - 1; i >= 0; i--) {
-                    var d = new Date(str);
-                    d.setDate(d.getDate() - i);
-                    var dayobject={}; //用一个对象包装Date对象  以便为以后预定功能添加属性
-                    dayobject.day=d;
-                    this.days.push(dayobject);//将日期放入data 中的days数组 供页面渲染使用
-                }
-                //其他周
-                for (var i = 1; i <= 42 - this.currentWeek; i++) {
-                    var d = new Date(str);
-                    d.setDate(d.getDate() + i);
-                    var dayobject={};
-                    // dayobject.day=d;
-                    dayobject = {day: d,isSign: this.isVerDate(d.getDate()),isNoSign: this.isNoSign(d.getDate()),isToday: this.isToday(d.getDate())}
-                    this.days.push(dayobject);
-                }
+                   var leftcount=0; //存放剩余数量
+                    var date;
+                    if (cur) {
+                    console.log(cur)
+                        date = new Date(cur);
+                    } else {
+                        var now=new Date();
+                        var d = new Date(this.formatDate(now.getFullYear() , now.getMonth() , 1));
+                        d.setDate(42);
+                        date = new Date(this.formatDate(d.getFullYear(),d.getMonth() + 1,1));
+                    }
+                    this.currentDay = date.getDate();
+                    this.currentYear = date.getFullYear();
+                    this.currentMonth = date.getMonth() + 1;
+
+                    this.currentWeek = date.getDay(); // 1...6,0
+                    if (this.currentWeek == 0) {
+                        this.currentWeek = 7;
+                    }
+                    var str = this.formatDate(this.currentYear , this.currentMonth, this.currentDay);
+                    this.days.length = 0;
+                    // 今天是周日，放在第一行第7个位置，前面6个
+                    //初始化本周
+                    for (var i = this.currentWeek - 1; i >= 0; i--) {
+                        var d = new Date(str);
+                        d.setDate(d.getDate() - i);
+                        var dayobject={}; //用一个对象包装Date对象  以便为以后预定功能添加属性
+                        dayobject.day=d;
+                        this.days.push(dayobject);//将日期放入data 中的days数组 供页面渲染使用
+                    }
+                    //其他周
+                    for (var i = 1; i <= 42 - this.currentWeek; i++) {
+                        var d = new Date(str);
+                        d.setDate(d.getDate() + i);
+                        var dayobject={};
+                        // dayobject.day=d;
+                        dayobject = {day: d,isSign: this.isVerDate(d.getDate()),isNoSign: this.isNoSign(d.getDate()),isToday: this.isToday(d.getDate())}
+                        this.days.push(dayobject);
+                    }
+
+                });
+
+
+                
+
             },
             isVerDate (v) {
+                //console.log(this.arrDate.includes(v))
                 return this.arrDate.includes(v)
+                
             },
             isNoSign (v) {
+                //console.log(this.noSignDate.includes(v))
                 return this.noSignDate.includes(v)
             },
             isToday(v){

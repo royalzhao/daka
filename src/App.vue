@@ -11,7 +11,7 @@ export default {
 </script>
 
 <style>
-@import url("//at.alicdn.com/t/font_625310_c68zjyw54jejnhfr.css");
+@import url("//at.alicdn.com/t/font_625310_xp70ldy2bw8.css");
 @import url("https://fonts.googleapis.com/icon?family=Material+Icons");
 
 @import url("../static/css/style.css");
