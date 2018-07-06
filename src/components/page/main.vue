@@ -38,7 +38,7 @@
             </div>
             <div class="awardAdd">
                 <center>
-                    <span>全勤奖新增¥{{totalPerson}}</span>
+                    <span>全勤奖新增¥{{newlyIncreased}}</span>
                 </center>
             </div>
         </div>
@@ -46,9 +46,16 @@
             <main-tab></main-tab>
         </div>
         <!-- 写留言 -->
-        <div class="write">
+        <div class="write" @click="openBottomSheet" >
+            
             <i class="iconfont icon-bi"></i>    
         </div>
+        <mu-bottom-sheet :open="bottomSheet" @close="closeBottomSheet">
+            <div class="message-content">
+                <mu-text-field hintText="输入你想说的话" multiLine :rows="2" :rowsMax="4"/><br/>
+                <mu-raised-button label="发送" @click="sendCloseBottomSheet" class="demo-raised-button" primary/>
+            </div>
+        </mu-bottom-sheet>
         <!-- 点击参与 -->
         <div class="involvement">
             参与
@@ -60,6 +67,7 @@
     import showCalendar from '../other/calendar.vue'
     import awardScroll from '../other/awardScroll.vue'
     import mainTab from '../other/mainTab.vue'
+    
     export default {
         data(){
             return{
@@ -67,13 +75,38 @@
                 totalPerson:2701,
                 totalMoney:721560.00,
                 personPay:210,
+                newlyIncreased:0,
                 arrDate: [],
+                bottomSheet: false
             }
         },
         components:{
             showCalendar,awardScroll,mainTab
         },
-      
+        
+        mounted() {
+            this.init()
+        },
+        methods: {
+            init(){
+                this.$fetch(url.newlyIncreased).then(res => {
+                   this.totalPerson = res.IntegrationSum
+                   this.newlyIncreased = res.newlyIncreased
+                   this.totalMoney = res.IntegrationSum*210
+                   this.todayPersonNum = res.todaySignIn
+                   console.log(res)
+                })
+            },
+            closeBottomSheet () {
+                this.bottomSheet = false
+            },
+            openBottomSheet () {
+                this.bottomSheet = true
+            },
+            sendCloseBottomSheet(){
+                this.bottomSheet = false
+            }
+        }
     }
 </script>
 <style scoped>
@@ -170,5 +203,10 @@
         right: 10px;
         background: #fff;
         z-index: 999;
+    }
+    .message-content{
+        width: 90%;
+        margin: 0 auto;
+        padding: 10px 0;
     }
 </style>
