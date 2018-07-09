@@ -13,6 +13,8 @@ Vue.use(MuseUI)
 import vueSeamlessScroll from 'vue-seamless-scroll'
 Vue.use(vueSeamlessScroll)
 
+import qs from 'qs'
+
 Vue.config.productionTip = false
 
 import {post,fetch,patch,put} from './util/http'

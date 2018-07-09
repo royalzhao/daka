@@ -57,16 +57,16 @@
                 <i slot="right" class="iconfont icon-arrow-right-copy"/></i>
                 </mu-list-item>
                 <mu-divider />
-                <mu-list-item title="绑定手机" to="bindPhone">
+                <!-- <mu-list-item title="绑定手机" to="bindPhone">
                 <i slot="left" class="iconfont icon-shouji"/></i>
                 <i slot="right" class="iconfont icon-arrow-right-copy"/></i>
                 </mu-list-item>
-                <mu-divider />
-                <mu-list-item title="修改密码" to="updatePassword">
+                <mu-divider /> -->
+                <!-- <mu-list-item title="修改密码" to="updatePassword">
                 <i slot="left" class="iconfont icon-suo"/></i>
                 <i slot="right" class="iconfont icon-arrow-right-copy"/></i>
                 </mu-list-item>
-                <mu-divider />
+                <mu-divider /> -->
                 <mu-list-item title="我的钱包" to="wallet">
                 <i slot="left" class="iconfont icon-qianbao"/></i>
                 <i slot="right" class="iconfont icon-arrow-right-copy"/></i>

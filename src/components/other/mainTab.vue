@@ -1,46 +1,27 @@
 <template>
     <div>
         <mu-tabs :value="activeTab" @change="handleTabChange">
-        <mu-tab value="tab1" title="留言"/>
+        <mu-tab value="tab1" title="精选留言"/>
         <mu-tab value="tab2" title="打卡说明"/>
         
         </mu-tabs>
         <div v-if="activeTab === 'tab1'">
             <p>
                 <mu-list>
-                    <mu-list-item title="张三">
-                    <mu-avatar src="../../../static/img/avatar1.jpg" slot="leftAvatar"/>
-                    <span slot="describe">
-                        <span style="color: rgba(0, 0, 0, .87)">Myron Liu -</span> 周末要来你这里出差，要不要一起吃个饭呀，实在编不下去了,哈哈哈哈哈哈
-                    </span>
-                    <span slot="right" class="time">一周前</span>
-                    </mu-list-item>
-                    <mu-divider inset/>
-                    <mu-list-item title="李四">
-                    <mu-avatar src="../../../static/img/avatar2.jpg" slot="leftAvatar"/>
-                    <span slot="describe">
-                        <span style="color: rgba(0, 0, 0, .87)">看电影啊</span>
-                        我们去看电影，最近有部烂片上映，又有吐槽的了
-                    </span>
-                    <span slot="right" class="time">一周前</span>
-                    </mu-list-item>
-                    <mu-divider inset/>
-                    <mu-list-item title="王五">
-                    <mu-avatar src="../../../static/img/avatar3.jpg" slot="leftAvatar"/>
-                    <span slot="describe">
-                        <span style="color: rgba(0, 0, 0, .87)">去打游戏啊</span><br/>
-                        周末一起 LOL
-                    </span>
-                    <span slot="right" class="time">一周前</span>
-                    </mu-list-item>
-                    <mu-divider inset/>
-                    <mu-list-item title="赵六">
-                    <mu-avatar src="../../../static/img/uicon.jpg" slot="leftAvatar"/>
-                    <span slot="describe">
-                        <span style="color: rgba(0, 0, 0, .87)">哇去</span><br/> 实在编不下去，这就是个demo
-                    </span>
-                    <span slot="right" class="time">一周前</span>
-                    </mu-list-item>
+                    <div v-for="item in messageList">
+                        <mu-list-item :title="item.nickname">
+                            <mu-avatar :src="item.headimgurl" slot="leftAvatar"/>
+                            <span slot="describe">
+                               {{item.content}}
+                            </span>
+                            <span slot="right" class="time">
+                                <div v-time="item.word_time"></div>
+                            </span>
+                        </mu-list-item>
+                        <mu-divider inset/>
+                    </div>
+                   
+                    
                 </mu-list>
             </p>
         </div>
@@ -48,8 +29,7 @@
             <h2>打卡说明</h2>
             <p>
                 这是第二个 tab
-                <div v-time="timeNow"></div>
-                <div v-time="timeBefore"></div>
+               
             </p>
         </div>
         
@@ -127,18 +107,30 @@
             delete el.__timeout__;
         }
     })
+import url from '@/serviceAPI.config.js'
     export default {
         data () {
             return {
                 activeTab: 'tab1',
                 timeNow:(new Date()).getTime(),
-                timeBefore:686219755822
+                timeBefore:686219755822,
+                messageList:[]
             }
+        },
+        mounted() {
+            this.init()
         },
         methods: {
             handleTabChange (val) {
                 this.activeTab = val
-            }
+            },
+            init(){
+                this.$fetch(url.showChoice).then(res => {
+                    this.messageList = res
+                    //console.log(res)
+                })
+                
+            },
         }
     }
 </script>

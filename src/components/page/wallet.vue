@@ -6,7 +6,7 @@
         <mu-card>
             <mu-card-title title="钱包余额"/>
             <mu-card-text>
-                <div class="num">¥0.00</div>
+                <div class="num">¥{{money}}</div>
             </mu-card-text>
             <mu-card-actions>
                 <mu-flat-button v-if="cash" label="提现"/>
@@ -29,16 +29,34 @@
     </div>
 </template>
 <script>
+    import url from '@/serviceAPI.config.js'
     export default {
         data(){
             return{
                 cash:false,
                 Title_Data:'我的钱包',
+                money:0.00,
             }
+        },
+        mounted() {
+            this.init()
         },
         methods:{
             RouterOne(){
                 this.$router.go(-1);
+            },
+            init(){
+                this.$fetch(url.wallet).then(res => {
+                    //this.messageList = res
+                    console.log(res)
+                    this.money = res.balance
+                    if(res.balance>1){
+                        this.cash = true
+                    }else{
+                        this.cash = false
+                    }
+                })
+                
             },
         }
     }

@@ -6,6 +6,15 @@
         <div class="calendar">
             <show-calendar></show-calendar>
         </div>
+        <div class="showState">
+            <div class="message">
+                {{stateMessage}}
+            </div>
+            <div v-if='activityState'>
+                <mu-raised-button label="点击报名" class="demo-raised-button" fullWidth primary/>
+            </div>
+            
+        </div>
         <div class="block total-block">
             <p>{{todayPersonNum}}人早起打卡<br><span>{{totalPerson}}人参加，瓜分¥{{totalMoney}}</span></p>
             <div class="award">
@@ -52,14 +61,16 @@
         </div>
         <mu-bottom-sheet :open="bottomSheet" @close="closeBottomSheet">
             <div class="message-content">
-                <mu-text-field hintText="输入你想说的话" multiLine :rows="2" :rowsMax="4"/><br/>
+                <mu-text-field hintText="输入你想说的话" v-model="message.content" multiLine :rows="2" :rowsMax="4"/><br/>
                 <mu-raised-button label="发送" @click="sendCloseBottomSheet" class="demo-raised-button" primary/>
             </div>
         </mu-bottom-sheet>
         <!-- 点击参与 -->
-        <div class="involvement">
+        
+        <div v-if='activityState' class="involvement">
             参与
         </div>
+        <mu-snackbar v-if="toast" message="您的留言提交成功，请等待审核。" @actionClick="hideToast" @close="hideToast"/>
     </div>
 </template>
 <script>
@@ -67,7 +78,90 @@
     import showCalendar from '../other/calendar.vue'
     import awardScroll from '../other/awardScroll.vue'
     import mainTab from '../other/mainTab.vue'
+
+    /* 日期解析，字符串转日期 
+    * @param dateString 可以为2017-02-16，2017/02/16，2017.02.16 
+    * @returns {Date} 返回对应的日期对象 
+    */  
+    function dateParse(dateString){  
+        var SEPARATOR_BAR = "-";  
+        var SEPARATOR_SLASH = "/";  
+        var SEPARATOR_DOT = ".";  
+        var dateArray;  
+        if(dateString.indexOf(SEPARATOR_BAR) > -1){  
+            dateArray = dateString.split(SEPARATOR_BAR);    
+        }else if(dateString.indexOf(SEPARATOR_SLASH) > -1){  
+            dateArray = dateString.split(SEPARATOR_SLASH);  
+        }else{  
+            dateArray = dateString.split(SEPARATOR_DOT);  
+        }  
+        return new Date(dateArray[0], dateArray[1]-1, dateArray[2]);   
+    };  
+
+    function isEmpty(string){
+        if(string == undefined){
+            return false
+        }else{
+            return true;
+        }
+    }
+    /** 
+     * 日期比较大小 
+     * compareDateString大于dateString，返回1； 
+     * 等于返回0； 
+     * compareDateString小于dateString，返回-1 
+     * @param dateString 日期 
+     * @param compareDateString 比较的日期 
+     */  
+    function dateCompare(dateString, compareDateString){  
+        // if(isEmpty(dateString)){  
+        //     alert("dateString不能为空");  
+        //     return;  
+        // }  
+        // if(isEmpty(compareDateString)){  
+        //     alert("compareDateString不能为空");  
+        //     return;  
+        // }  
+        var dateTime = dateParse(dateString).getTime();  
+        var compareDateTime = dateParse(compareDateString).getTime();  
+        if(compareDateTime > dateTime){  
+            return 1;  
+        }else if(compareDateTime == dateTime){  
+            return 0;  
+        }else{  
+            return -1;  
+        }  
+    };  
     
+    /** 
+     * 判断日期是否在区间内，在区间内返回true，否返回false 
+     * @param dateString 日期字符串 
+     * @param startDateString 区间开始日期字符串 
+     * @param endDateString 区间结束日期字符串 
+     * @returns {Number} 
+     */  
+    function isDateBetween(dateString, startDateString, endDateString){  
+        // if(isEmpty(dateString)){  
+        //     alert("dateString不能为空");  
+        //     return;  
+        // }  
+        // if(isEmpty(startDateString)){  
+        //     alert("startDateString不能为空");  
+        //     return;  
+        // }  
+        // if(isEmpty(endDateString)){  
+        //     alert("endDateString不能为空");  
+        //     return;  
+        // }  
+        var flag = false;  
+        var startFlag = (dateCompare(dateString, startDateString) < 1);  
+        var endFlag = (dateCompare(dateString, endDateString) > -1);  
+        if(startFlag && endFlag){  
+            flag = true;  
+        }  
+        return flag;  
+    };  
+
     export default {
         data(){
             return{
@@ -77,7 +171,13 @@
                 personPay:210,
                 newlyIncreased:0,
                 arrDate: [],
-                bottomSheet: false
+                bottomSheet: false,
+                stateMessage:'',
+                activityState:false,
+                message:{
+                    content:'123'
+                },
+                toast:false
             }
         },
         components:{
@@ -94,7 +194,29 @@
                    this.newlyIncreased = res.newlyIncreased
                    this.totalMoney = res.IntegrationSum*210
                    this.todayPersonNum = res.todaySignIn
-                   console.log(res)
+                   //console.log(res)
+                })
+                this.$fetch(url.activityNow).then(res => {
+                    //console.log(res)
+                    var myDateTime = new Date();//获取系统当前时间
+                    var myData = myDateTime.toLocaleDateString(); //获取当前日期
+                    if(isDateBetween(myData,res.begin_enroll_time,res.end_enroll_time)){
+                        console.log('活动预报名中（点击下方按钮报名）')
+                        this.stateMessage = '活动预报名中（点击下方按钮报名）'
+                        this.activityState = true
+                    }
+                    else if(isDateBetween(myData,res.begin_sign_time,res.end_sign_time)){
+                        this.stateMessage = '活动正在进行中，如需报名请等待下次活动开启'
+                        console.log('活动正在进行中，如需报名请等待下次活动开启')
+                        this.activityState = false
+                    }else{
+                        this.stateMessage = '活动未开始'
+                        console.log('活动未开始')
+                        this.activityState = false
+                    }
+                    
+                
+                   
                 })
             },
             closeBottomSheet () {
@@ -104,7 +226,23 @@
                 this.bottomSheet = true
             },
             sendCloseBottomSheet(){
-                this.bottomSheet = false
+                var qs = require('qs');
+                this.$post(url.leaveWord,qs.stringify(this.message)).then(res => {
+                  if(res.returnCode == 'success'){
+                        this.toast = true
+                        if (this.toastTimer) clearTimeout(this.toastTimer)
+                        this.toastTimer = setTimeout(() => { this.toast = false }, 2000)
+
+                        this.bottomSheet = false
+                   }else{
+                       alert("网络错误")
+                   }
+                })
+                
+            },
+            hideToast () {
+                this.toast = false
+                if (this.toastTimer) clearTimeout(this.toastTimer)
             }
         }
     }
@@ -209,4 +347,13 @@
         margin: 0 auto;
         padding: 10px 0;
     }
+    .showState{
+        margin: 15px 0;
+        background: #2196f3;
+        color: #fff;
+        text-align: center;
+        padding: 10px 0;
+        font-size: 20px;
+    }
+    
 </style>

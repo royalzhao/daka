@@ -4,21 +4,41 @@
             <mu-icon-button icon="keyboard_arrow_left" slot="left" @click="RouterOne" />
         </mu-appbar>
         <mu-card>
-            <mu-text-field label="昵称" hintText="请输入昵称" fullWidth/><br/>
-            <mu-text-field label="姓名" hintText="请输入真实姓名" fullWidth/><br/>
-            <mu-select-field v-model="sexNum" :labelFocusClass="['label-foucs']" label="性别">
+            <mu-text-field label="昵称" v-model="form.nickname" hintText="请输入昵称" fullWidth/><br/>
+            <mu-text-field label="姓名" v-model="form.real_name"  hintText="请输入真实姓名" fullWidth/><br/>
+            <mu-select-field v-model="form.sexNum" :labelFocusClass="['label-foucs']" label="性别">
                 <mu-menu-item v-for="text,index in sex" :key="index" :value="index" :title="text" />
             </mu-select-field>
             <br/>
+            
+           
+                <mu-text-field  label="手机号" hintText="请输入手机号码" v-model="form.phone_no" @change="phoneChange" fullWidth type="number"/><br/>
+                <!-- 
+              <div class="yanzhengma">
+                    <mu-text-field  label="验证码" hintText="请输入您的验证码" v-model="VeriCode"  @change="VeriCode_LaBel" fullWidth/><br/>
+                    <mu-flat-button  :label="VeriCodeBtnLaBel" class="VeriCodeBtn" @click="getCode()" primary fullWidth />
+                    <mu-raised-button label="验证码" class="demo-raised-button code" primary/>
+                </div>
+           -->
+            <!-- <mu-snackbar v-if="Codetoast" message="验证码错误(demo输入六位即可)" action="确定" @actionClick="hideToast" @close="hideToast"/> -->
+            <mu-snackbar v-if="phonetoast" message="请填入正确的手机号" />
+            <mu-snackbar v-if="coedSendToast" message="验证码发送成功" />
+            <mu-snackbar v-if="allToast" message="请填入所有信息"  />
 
             <mu-text-field label="地区" hintText="请输入地区" v-model="address"  @focus="openBottomSheet" fullWidth/><br/>
             <mu-bottom-sheet :open="bottomSheet" @close="closeBottomSheet">
                 <mu-picker :slots="addressSlots" :visible-item-count="5" @change="addressChange" :values="address"/>
             </mu-bottom-sheet>
 
-            <mu-text-field label="详细地址" hintText="请输入详细地址" fullWidth/><br/>
+            <mu-text-field label="详细地址" hintText="请输入详细地址" v-model="form.address_info" fullWidth/><br/>
             <div class="save">
-                <mu-raised-button label="保存修改" class="demo-raised-button" primary/>
+                <div v-if="changed">
+                        <mu-raised-button label="保存修改" @click="submit" class="demo-raised-button" primary/>
+                </div>
+                <div v-else>
+                        <mu-raised-button label="保存修改" class="demo-raised-button" disabled/>
+                </div>
+                
             </div>
             
         </mu-card>
@@ -61,13 +81,13 @@
     '澳门': ['澳门'],
     '台湾': ['台北市', '高雄市', '台北县', '桃园县', '新竹县', '苗栗县', '台中县', '彰化县', '南投县', '云林县', '嘉义县', '台南县', '高雄县', '屏东县', '宜兰县', '花莲县', '台东县', '澎湖县', '基隆市', '新竹市', '台中市', '嘉义市', '台南市']
     }
+    import url from '@/serviceAPI.config.js'
     export default {
         
         data(){
             return{
-                sexNum:0,
                 Title_Data:'个人资料',
-                sex:['男','女'],
+                sex:['未知','男','女'],
                 addressSlots: [
                     {
                     width: '100%',
@@ -82,10 +102,56 @@
                 address: ['北京', '北京'],
                 addressProvince: '北京',
                 addressCity: '北京',
-                bottomSheet: false
+                bottomSheet: false,
+                VeriCode: '',
+                phoneNum:'',
+                Title_Data:'个人资料',
+                phone:true,
+                VeriCodeBtnLaBel: '获取验证码',
+                show: true,
+                Codetoast: false,
+                phonetoast : false,
+                coedSendToast : false,
+                allToast : false,
+                form:{
+                    nickname:'',
+                    real_name:'',
+                    sexNum:0,
+                    phone_no:'',
+                    address:'',
+                    address_info: '',
+                },
+                changed:false
+            }
+        },
+        mounted() {
+            this.init()
+        },
+        watch:{
+            form:{
+                handler:function(obj){
+                   this.changed = true
+                },
+                deep:true
+            },
+            address(){
+                this.form.address = this.address[0]+','+this.address[1]
             }
         },
         methods:{
+            init(){
+                this.$fetch(url.showAccountInfo).then(res => {
+                    //this.messageList = res
+                    console.log(res)
+                    this.form.nickname = res.nickname
+                    this.form.real_name = res.real_name
+                    this.form.sexNum = Number(res.sexNum)
+                    this.form.phone_no = res.phone_no
+                    //this.form.address = res.address
+                    this.form.address_info = res.address_info
+                })
+                
+            },
             RouterOne(){
                 this.$router.go(-1);
             },
@@ -109,6 +175,87 @@
             },
             openBottomSheet () {
                 this.bottomSheet = true
+            },
+            VeriCode_LaBel () {
+                if(this.VeriCodeLaBel.length > '1'){
+                    this.VeriCodeLaBel = ' ';
+                }else{
+                    this.VeriCodeLaBel = '请输入您的验证码';
+                }
+            },
+            phoneChange(){
+                var reg=11 && /^((13|14|15|17|16|18)[0-9]{1}\d{8})$/;
+                if (!reg.test(this.phoneNum)) {
+
+                    this.phonetoast = true
+                    if (this.toastTimer) clearTimeout(this.toastTimer)
+                    this.toastTimer = setTimeout(() => { this.phonetoast = false }, 2000)
+
+                } else if(!this.phoneNum) {
+
+                    this.phonetoast = true
+                    if (this.toastTimer) clearTimeout(this.toastTimer)
+                    this.toastTimer = setTimeout(() => { this.phonetoast = false }, 2000)
+                    
+                }
+            },
+            RouterOne(){
+                this.$router.go(-1);
+            },
+            getCode(){
+                if(this.show === true){
+                    this.coedSendToast = true
+                    if (this.toastTimer) clearTimeout(this.toastTimer)
+                    this.toastTimer = setTimeout(() => { this.coedSendToast = false }, 2000)
+                        const TIME_COUNT = '60';
+                            if (!this.timer) {
+                                this.count = TIME_COUNT;
+                                this.show = false;
+                                this.timer = setInterval(() => {
+                                if (this.count > 0 && this.count <= TIME_COUNT) {
+                                    this.count--;
+                                    this.VeriCodeBtnLaBel = this.count + '秒后重试'
+                                } else {
+                                    this.VeriCodeBtnLaBel = '重新获取'
+                                    this.show = true;
+                                    clearInterval(this.timer);
+                                    this.timer = null;
+                                }
+                            }, 1000)
+                        }
+                }
+            },
+            // submit(){
+            //     if(this.phoneNum.length >= '11' && this.VeriCode.length > '1'){
+            //         if(this.VeriCode.length < '6'){
+            //             this.Codetoast = true
+            //             if (this.toastTimer) clearTimeout(this.toastTimer)
+            //             this.toastTimer = setTimeout(() => { this.Codetoast = false }, 2000)
+            //         }else{
+            //             console.log('修改成功')
+            //         }
+            //     }else{
+            //         this.allToast = true
+            //         if (this.toastTimer) clearTimeout(this.toastTimer)
+            //         this.toastTimer = setTimeout(() => { this.allToast = false }, 2000)
+            //     }
+            // },
+            submit(){   //发送修改内容到服务器
+                if(this.form.nickname.length >= '1' && this.form.real_name.length >= '1' && this.form.phone_no.length >= '1' && this.form.address_info.length >= '1'){
+                    var qs = require('qs');
+                    this.$post(url.supplementUserinfo,qs.stringify(this.form)).then(res => {
+                      
+                        if(res.returnCode == 'success'){
+                            this.changed = false
+                        }else{
+                            alert("网络错误")
+                        }
+                    })
+                }else{
+                    this.allToast = true
+                    if (this.toastTimer) clearTimeout(this.toastTimer)
+                    this.toastTimer = setTimeout(() => { this.allToast = false }, 2000)
+                }
             }
         }
     }
@@ -125,5 +272,9 @@
 }
 .save{
     text-align: center;
+}
+.VeriCodeBtn{
+    margin-top: -3.7em;
+    float:right;
 }
 </style>

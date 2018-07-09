@@ -98,7 +98,7 @@
                 this.$fetch(url.userSignDate).then(res => {
                     var arr = []
                     for(let item of res){
-                        console.log(item)
+                        //console.log(item)
                         arr.push(Number(item.s_date))
                     }
                    
@@ -109,7 +109,7 @@
                    var leftcount=0; //存放剩余数量
                     var date;
                     if (cur) {
-                    console.log(cur)
+                    //console.log(cur)
                         date = new Date(cur);
                     } else {
                         var now=new Date();
