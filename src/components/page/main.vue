@@ -11,7 +11,7 @@
                 {{stateMessage}}
             </div>
             <div v-if='activityState'>
-                <mu-raised-button label="点击报名" class="demo-raised-button" fullWidth primary/>
+                <mu-raised-button label="点击报名" @click="join" class="demo-raised-button" fullWidth primary/>
             </div>
             
         </div>
@@ -67,7 +67,7 @@
         </mu-bottom-sheet>
         <!-- 点击参与 -->
         
-        <div v-if='activityState' class="involvement">
+        <div v-if='activityState' @click="join" class="involvement">
             参与
         </div>
         <mu-snackbar v-if="toast" message="您的留言提交成功，请等待审核。" @actionClick="hideToast" @close="hideToast"/>
@@ -162,6 +162,8 @@
         return flag;  
     };  
 
+    const wx = require('weixin-js-sdk')
+    const STATUS = 1
     export default {
         data(){
             return{
@@ -177,7 +179,21 @@
                 message:{
                     content:'123'
                 },
-                toast:false
+                toast:false,
+                payData:{
+                    openid:openid,
+					body:'幸运打卡第一期',
+					total_fee:'10'
+                },
+                payData2:{
+                    openid:openid,//openid
+                    body:body,//商品描述
+                    total_fee:total_fee,//商品金額 單位：分
+                    out_trade_no:out_trade_no
+                },
+                payUrl:{
+                    url:'https://www.mantrue.cn/'
+                }
             }
         },
         components:{
@@ -219,13 +235,13 @@
                    
                 })
             },
-            closeBottomSheet () {
+            closeBottomSheet () {           //关闭底部弹窗
                 this.bottomSheet = false
             },
-            openBottomSheet () {
+            openBottomSheet () {            //开启底部弹窗
                 this.bottomSheet = true
             },
-            sendCloseBottomSheet(){
+            sendCloseBottomSheet(){     //留言模块
                 var qs = require('qs');
                 this.$post(url.leaveWord,qs.stringify(this.message)).then(res => {
                   if(res.returnCode == 'success'){
@@ -243,6 +259,71 @@
             hideToast () {
                 this.toast = false
                 if (this.toastTimer) clearTimeout(this.toastTimer)
+            },
+            join(){         //参加活动，调起支付接口
+                this._getWxpayData()
+            },
+            _getWxpayData() { 
+                let qs = require('qs');
+                this.$post(url.baseUrl + '/wxpaySign/unifiedOrder',qs.stringify( this.payData)).then((res) => { 
+                    // 这里的openid我存在了localStorage里面，获取授权进入时就进行了一次存入，方便调用。 
+                    that = res
+                    if (res.checkResult != 'partakeIn') { 
+                        this._wxpayConfig() 
+                        wx.ready(() => { 
+                            this._setWxpayInfo(that) 
+                        }) 
+                    }else{
+                        console.log("以参与活动")
+                    }
+                }) 
+            }, 
+            _wxpayConfig() { 
+                let qs = require('qs');
+                this.$post(url.baseUrl + '/wxpaySign/js_access',qs.stringify( this.payUrl)).then((res) => {
+                     console.log(res.body) 
+                     let data = res.body.data 
+                     if (res.body.status === STATUS) {
+                          wx.config({
+                            debug: true, 
+                            appId: data.appId,
+                            timestamp: data.timestamp, 
+                            nonceStr: data.nonceStr, 
+                            signature: data.signature, 
+                            jsApiList: ['chooseWXPay'] 
+                        }) 
+                    } 
+                }) 
+            }, 
+            _setWxpayInfo(data) { 
+                
+                wx.chooseWXPay({ 
+                    timestamp : data.timeStamp, // 支付签名时间戳，注意微信jssdk中的所有使用timestamp字段均为小写。但最新版的支付后台生成签名使用的timeStamp字段名需大写其中的S字符
+                    nonceStr : data.nonceStr, // 支付签名随机串，不长于 32 位
+                    package : data.package, // 统一支付接口返回的prepay_id参数值，提交格式如：prepay_id=\*\*\*）
+                    signType : data.signType, // 签名方式，默认为'SHA1'，使用新版支付需传入'MD5'
+                    paySign : data.paySign, // 支付签名
+                    success(res) { 
+                       // 支付成功后的回调函数
+                        if(res.errMsg === "chooseWXPay:ok" ) {
+                                alert(res);
+                        }else if(res.errMsg === "chooseWXPay:cancel") {
+                            alert('取消付款');
+                        }else if(res.errMsg === "chooseWXPay:fail") {
+                            alert(res);
+                            alert('支付失败');
+                        }else {
+                            alert('未知异常');
+                        }
+                    }, 
+                    cancel() { 
+                        window.alert('支付取消') 
+                        window.location.reload() 
+                    }, error(res) { 
+                        window.alert('支付失败') 
+                        window.location.reload() 
+                    } 
+                }) 
             }
         }
     }

@@ -1,5 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import mutations from './mutations'
+import actions from './actions'
 
 Vue.use(Vuex);
 
@@ -7,14 +9,8 @@ const state={
     activeTab:'tab1'
 }
 
-const mutations={
-    change(state,value){
-        state.activeTab = value;
-    },
-    
-}
 
 export default new Vuex.Store({
-	state,mutations
+	state,mutations,actions
  
 })
