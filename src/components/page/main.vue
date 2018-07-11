@@ -10,10 +10,9 @@
             <div class="message">
                 {{stateMessage}}
             </div>
-            <div v-if='activityState'>
-                <mu-raised-button label="点击报名" @click="join" class="demo-raised-button" fullWidth primary/>
-            </div>
-            
+        </div>
+        <div v-if='activityState' class="baoming-button" >
+            <mu-raised-button label="点击报名" @click="join" class="demo-raised-button" fullWidth secondary />
         </div>
         <div class="block total-block">
             <p>{{todayPersonNum}}人早起打卡<br><span>{{totalPerson}}人参加，瓜分¥{{totalMoney}}</span></p>
@@ -68,7 +67,7 @@
         <!-- 点击参与 -->
         
         <div v-if='activityState' @click="join" class="involvement">
-            参与
+            报名
         </div>
         <mu-snackbar v-if="toast" message="您的留言提交成功，请等待审核。" @actionClick="hideToast" @close="hideToast"/>
     </div>
@@ -181,18 +180,13 @@
                 },
                 toast:false,
                 payData:{
-                    openid:openid,
+                    openid:'',
 					body:'幸运打卡第一期',
 					total_fee:'10'
                 },
-                payData2:{
-                    openid:openid,//openid
-                    body:body,//商品描述
-                    total_fee:total_fee,//商品金額 單位：分
-                    out_trade_no:out_trade_no
-                },
+               
                 payUrl:{
-                    url:'https://www.mantrue.cn/'
+                    url:'https://morning.yingtaizhenghe.com/'
                 }
             }
         },
@@ -205,6 +199,12 @@
         },
         methods: {
             init(){
+                this.$fetch('https://morning.yingtaizhenghe.com/wxpaySign/info').then(res => {
+                    console.log(res)
+                    this.payData.openid = res.openid
+                    
+                })
+                
                 this.$fetch(url.newlyIncreased).then(res => {
                    this.totalPerson = res.IntegrationSum
                    this.newlyIncreased = res.newlyIncreased
@@ -265,9 +265,10 @@
             },
             _getWxpayData() { 
                 let qs = require('qs');
+                console.log(this.payData.openid)
                 this.$post(url.baseUrl + '/wxpaySign/unifiedOrder',qs.stringify( this.payData)).then((res) => { 
                     // 这里的openid我存在了localStorage里面，获取授权进入时就进行了一次存入，方便调用。 
-                    that = res
+                    var that = res
                     if (res.checkResult != 'partakeIn') { 
                         this._wxpayConfig() 
                         wx.ready(() => { 
@@ -281,18 +282,16 @@
             _wxpayConfig() { 
                 let qs = require('qs');
                 this.$post(url.baseUrl + '/wxpaySign/js_access',qs.stringify( this.payUrl)).then((res) => {
-                     console.log(res.body) 
-                     let data = res.body.data 
-                     if (res.body.status === STATUS) {
-                          wx.config({
+                        console.log(res)
+                        wx.config({
                             debug: true, 
-                            appId: data.appId,
-                            timestamp: data.timestamp, 
-                            nonceStr: data.nonceStr, 
-                            signature: data.signature, 
+                            appId: res.appId,
+                            timestamp: res.timestamp, 
+                            nonceStr: res.nonceStr, 
+                            signature: res.signature, 
                             jsApiList: ['chooseWXPay'] 
                         }) 
-                    } 
+                  
                 }) 
             }, 
             _setWxpayInfo(data) { 
@@ -436,5 +435,10 @@
         padding: 10px 0;
         font-size: 20px;
     }
-    
+    .mu-raised-button-full{
+        width: 90%;
+    }
+    .baoming-button{
+        text-align: center;
+    }
 </style>

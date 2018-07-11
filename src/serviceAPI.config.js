@@ -1,6 +1,13 @@
-const BASEURL = "https://www.mantrue.cn"
-const LOCALURL = "http://192.168.0.126:8080/"
-const LOCALURL2 = "http://192.168.0.126:8081/"
+// if (process.env.NODE_ENV === 'production') {
+//     var BASEURL = "https://morning.yingtaizhenghe.com"
+//     var LOCALURL = "http://192.168.0.192/"
+//     var LOCALURL2 = "https://morning.yingtaizhenghe.com/core/"
+// } else {
+    var BASEURL = "https://morning.yingtaizhenghe.com"
+    var LOCALURL = "https://morning.yingtaizhenghe.com/wxpaySign/"
+    var LOCALURL2 = "https://morning.yingtaizhenghe.com/core/"
+// }
+
 const URL ={
     baseUrl:BASEURL,
     userSignDate : LOCALURL+'userSignDate',    //首页日期记录信息

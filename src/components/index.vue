@@ -1,13 +1,19 @@
 <template>
-  <div class="hello">
-    <div class="main-content">
-        <router-view/>
-    </div>
-    <div class="footer">
-        <cfooter></cfooter>
-    </div>
-    
+  <!-- <div v-if="showState">
+    <mu-circular-progress :size="60" :strokeWidth="5"/>
   </div>
+  <div v-else> -->
+    <div class="hello">
+      <div class="main-content">
+          <router-view/>
+      </div>
+      <div class="footer">
+          <cfooter></cfooter>
+      </div>
+      
+    </div>
+  <!-- </div> -->
+  
 </template>
 
 <script>
@@ -16,7 +22,28 @@
     name: 'hello',
     data () {
       return {
-        msg: 'Welcome to Your Vue.js App'
+        msg: 'Welcome to Your Vue.js App',
+        showState:false
+      }
+    },
+    mounted() {
+        //this.init()
+    },
+    methods:{
+      init(){
+        this.$fetch('https://www.mantrue.cn/wxpaySign/authorize').then(res => {
+            this.$fetch('https://www.mantrue.cn/wxpaySign/info').then(res => {
+                console.log(res)
+                if(res.openid == undefined){
+                  this.showState = true
+                }else{
+                  this.showState = false
+                  //localstorage存储用户的所有信息，包含openid等
+                  localStorage.setItem('openMessage',JSON.stringify(res));
+                }
+                
+            })
+        })
       }
     },
     components:{
