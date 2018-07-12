@@ -1,8 +1,8 @@
 <template>
-  <!-- <div v-if="showState">
+  <div v-if="showState" class="loading">
     <mu-circular-progress :size="60" :strokeWidth="5"/>
   </div>
-  <div v-else> -->
+  <div v-else>
     <div class="hello">
       <div class="main-content">
           <router-view/>
@@ -12,7 +12,7 @@
       </div>
       
     </div>
-  <!-- </div> -->
+  </div>
   
 </template>
 
@@ -26,23 +26,24 @@
         showState:false
       }
     },
-    mounted() {
-        //this.init()
+    created(){
+        this.init()
     },
     methods:{
       init(){
-        this.$fetch('https://www.mantrue.cn/wxpaySign/authorize').then(res => {
-            this.$fetch('https://www.mantrue.cn/wxpaySign/info').then(res => {
-                console.log(res)
-                if(res.openid == undefined){
-                  this.showState = true
-                }else{
-                  this.showState = false
-                  //localstorage存储用户的所有信息，包含openid等
-                  localStorage.setItem('openMessage',JSON.stringify(res));
-                }
-                
-            })
+        this.$fetch('https://morning.yingtaizhenghe.com/wxpaySign/info').then(res => {
+            //console.log(res)
+            //this.payData.openid = res.openid
+              const userInfo={
+                openid:res.openid,
+                nickname: res.nickname,
+                headimgurl: res.headimgurl
+              };
+              //localstorage存储用户的所有信息，包含openid等
+              localStorage.setItem('userInfo',JSON.stringify(userInfo));
+            
+        }).catch(res=>{
+          this.showState = true
         })
       }
     },
@@ -77,5 +78,9 @@ a {
   left: 0;
   right: 0;
   z-index: 999;
+}
+.loading{
+  text-align: center;
+  margin-top: 50%;
 }
 </style>

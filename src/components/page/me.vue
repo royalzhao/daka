@@ -13,7 +13,7 @@
                     <div class="circle_2">
                         <div class="circle_3">
                             <div class="circle_4">
-                                <img class="face-img" src="./../../../static/img/avatar1.jpg" alt="">
+                                <img class="face-img" :src="headImg" alt="">
                             </div>
                         </div>
                     </div>
@@ -24,22 +24,21 @@
             </div>
         </div>
         <div class="bottom">
-            <div class="sign">
-                <i class="iconfont icon-qiandao"></i>每日签到
+            <div class="sign" @click="daka">
+                <i class="iconfont icon-qiandao"></i>每日打卡
             </div>
             <div class="sign-person">
                 <div class="person-left">
                     <ul>
-                        <li>
-                            <img src="././../../../static/img/avatar1.jpg" alt="">
+                        <li v-for="item in faceList">
+                            <img :src="item.headimgurl" alt="">
                         </li>
-                        <li><img src="././../../../static/img/avatar2.jpg" alt=""></li>
-                        <li><img src="././../../../static/img/avatar3.jpg" alt=""></li>
+                        
                         <li>{{allUser}}位用户</li>
                     </ul>
                 </div>
                 <div class="person-right">
-                    已有{{signUser}}位用户签到
+                    已有{{signUser}}位用户打卡
                 </div>
             </div>
             
@@ -81,18 +80,78 @@
                 
            
         </div>
-        
+        <mu-snackbar v-if="snackbar" :message="toastMessage" action="关闭"  @actionClick="hideSnackbar" @close="hideSnackbar"/>
     </div>
 </template>
 <script>
+    import url from '@/serviceAPI.config.js'
     export default {
         name: 'me',
         data(){
             return{
-                username:'回忆总想哭',
-                allUser:16465,
-                signUser:352
+                username:JSON.parse(localStorage.getItem('userInfo')).nickname,
+                allUser:0,
+                signUser:0,
+                headImg:JSON.parse(localStorage.getItem('userInfo')).headimgurl,
+                snackbar:false,
+                toastMessage:'',
+                faceList:[]
             }
+        },
+        mounted() {
+            this.init()
+        },
+        methods:{
+            init(){
+                this.$fetch(url.signInStatistics).then(res => {
+                    this.faceList = res[0]
+                    this.allUser = res[1].nameListCount
+                    this.signUser = res[1].todaySignInCount
+                  
+                    console.log(res)
+                    console.log(this.faceList)
+                    console.log(res[1].nameListCount)
+                    console.log(this.signUser)
+                })
+            },
+            hideSnackbar() {
+                this.snackbar = false
+                if (this.snackTimer) clearTimeout(this.snackTimer)
+            },
+            daka(){
+                this.$fetch(url.doSign).then(res => {
+                  console.log(res)
+                  if(res.resultCode == 'alreadyIn'){
+
+                        this.toastMessage = '请勿重复打卡'
+                        this.snackbar = true
+                        if (this.snackTimer) clearTimeout(this.snackTimer)
+                        this.snackTimer = setTimeout(() => { this.snackbar = false }, 2000)
+
+                  }else if(res.resultCode == 'overtime'){
+
+                        this.toastMessage = '未在规定时间内打卡'
+                        this.snackbar = true
+                        if (this.snackTimer) clearTimeout(this.snackTimer)
+                        this.snackTimer = setTimeout(() => { this.snackbar = false }, 2000)
+
+                  }else if(res.resultCode == 'success'){
+
+                        this.toastMessage = '打卡成功'
+                        this.snackbar = true
+                        if (this.snackTimer) clearTimeout(this.snackTimer)
+                        this.snackTimer = setTimeout(() => { this.snackbar = false }, 2000)
+
+                  }else if(res.resultCode == 'fail'){
+
+                        this.toastMessage = '打卡失败'
+                        this.snackbar = true
+                        if (this.snackTimer) clearTimeout(this.snackTimer)
+                        this.snackTimer = setTimeout(() => { this.snackbar = false }, 2000)
+
+                  }
+                })
+            },
         }
     }
 </script>

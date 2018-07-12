@@ -20,6 +20,8 @@ const URL ={
     showChoice:LOCALURL2+'showChoice', //精选留言
     leaveWord:LOCALURL+'leaveWord', //发送留言
     showAccountInfo:LOCALURL+'showAccountInfo', //个人信息
+    doSign:LOCALURL+'doSign', //打卡
+    signInStatistics:LOCALURL2+'signInStatistics', //我的界面显示活动人数和打卡人数等信息
 }
 
 module.exports = URL

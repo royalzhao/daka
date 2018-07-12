@@ -14,6 +14,9 @@
         <div v-if='activityState' class="baoming-button" >
             <mu-raised-button label="点击报名" @click="join" class="demo-raised-button" fullWidth secondary />
         </div>
+        <div v-if='dakaState' class="baoming-button" >
+            <mu-raised-button label="点击打卡" @click="daka" class="demo-raised-button" fullWidth secondary />
+        </div>
         <div class="block total-block">
             <p>{{todayPersonNum}}人早起打卡<br><span>{{totalPerson}}人参加，瓜分¥{{totalMoney}}</span></p>
             <div class="award">
@@ -69,7 +72,7 @@
         <div v-if='activityState' @click="join" class="involvement">
             报名
         </div>
-        <mu-snackbar v-if="toast" message="您的留言提交成功，请等待审核。" @actionClick="hideToast" @close="hideToast"/>
+        <mu-snackbar v-if="snackbar" :message="toastMessage" action="关闭"  @actionClick="hideSnackbar" @close="hideSnackbar"/>
     </div>
 </template>
 <script>
@@ -178,7 +181,8 @@
                 message:{
                     content:'123'
                 },
-                toast:false,
+                snackbar:false,
+                toastMessage:'',
                 payData:{
                     openid:'',
 					body:'幸运打卡第一期',
@@ -186,8 +190,9 @@
                 },
                
                 payUrl:{
-                    url:'https://morning.yingtaizhenghe.com/'
-                }
+                    url:'https://morning.yingtaizhenghe.com/#/'
+                },
+                dakaState:true
             }
         },
         components:{
@@ -199,11 +204,10 @@
         },
         methods: {
             init(){
-                this.$fetch('https://morning.yingtaizhenghe.com/wxpaySign/info').then(res => {
-                    console.log(res)
-                    this.payData.openid = res.openid
-                    
-                })
+                //console.log(JSON.parse(localStorage.getItem('userInfo')))
+                //console.log(JSON.parse(localStorage.getItem('userInfo')).openid)
+                this.payData.openid = JSON.parse(localStorage.getItem('userInfo')).openid
+                 
                 
                 this.$fetch(url.newlyIncreased).then(res => {
                    this.totalPerson = res.IntegrationSum
@@ -225,6 +229,8 @@
                         this.stateMessage = '活动正在进行中，如需报名请等待下次活动开启'
                         console.log('活动正在进行中，如需报名请等待下次活动开启')
                         this.activityState = false
+                        this.dakaState = true
+
                     }else{
                         this.stateMessage = '活动未开始'
                         console.log('活动未开始')
@@ -245,7 +251,11 @@
                 var qs = require('qs');
                 this.$post(url.leaveWord,qs.stringify(this.message)).then(res => {
                   if(res.returnCode == 'success'){
-                        this.toast = true
+                        this.toastMessage = '您的留言提交成功，请等待审核。'
+                        this.snackbar = true
+                        if (this.snackTimer) clearTimeout(this.snackTimer)
+                        this.snackTimer = setTimeout(() => { this.snackbar = false }, 2000)
+                        
                         if (this.toastTimer) clearTimeout(this.toastTimer)
                         this.toastTimer = setTimeout(() => { this.toast = false }, 2000)
 
@@ -256,12 +266,53 @@
                 })
                 
             },
-            hideToast () {
-                this.toast = false
-                if (this.toastTimer) clearTimeout(this.toastTimer)
+            hideSnackbar  () {
+                this.snackbar = false
+                if (this.snackTimer) clearTimeout(this.snackTimer)
             },
             join(){         //参加活动，调起支付接口
                 this._getWxpayData()
+            },
+            daka(){
+                this.$fetch(url.doSign).then(res => {
+                  console.log(res)
+                  if(res.resultCode == 'alreadyIn'){
+
+                        this.toastMessage = '请勿重复打卡'
+                        this.snackbar = true
+                        if (this.snackTimer) clearTimeout(this.snackTimer)
+                        this.snackTimer = setTimeout(() => { this.snackbar = false }, 2000)
+
+                  }else if(res.resultCode == 'overtime'){
+
+                        this.toastMessage = '未在规定时间内打卡'
+                        this.snackbar = true
+                        if (this.snackTimer) clearTimeout(this.snackTimer)
+                        this.snackTimer = setTimeout(() => { this.snackbar = false }, 2000)
+
+                  }else if(res.resultCode == 'success'){
+
+                        this.toastMessage = '打卡成功'
+                        this.snackbar = true
+                        if (this.snackTimer) clearTimeout(this.snackTimer)
+                        this.snackTimer = setTimeout(() => { this.snackbar = false }, 2000)
+
+                  }else if(res.resultCode == 'fail'){
+
+                        this.toastMessage = '打卡失败'
+                        this.snackbar = true
+                        if (this.snackTimer) clearTimeout(this.snackTimer)
+                        this.snackTimer = setTimeout(() => { this.snackbar = false }, 2000)
+
+                  }else if(res.resultCode == 'be-disqualified'){
+
+                        this.toastMessage = '您非本次活动的参与者，无法打卡'
+                        this.snackbar = true
+                        if (this.snackTimer) clearTimeout(this.snackTimer)
+                        this.snackTimer = setTimeout(() => { this.snackbar = false }, 2000)
+
+                  }
+                })
             },
             _getWxpayData() { 
                 let qs = require('qs');
@@ -269,7 +320,7 @@
                 this.$post(url.baseUrl + '/wxpaySign/unifiedOrder',qs.stringify( this.payData)).then((res) => { 
                     // 这里的openid我存在了localStorage里面，获取授权进入时就进行了一次存入，方便调用。 
                     var that = res
-                    if (res.checkResult != 'partakeIn') { 
+                    if (res.checkResult == undefined) { 
                         this._wxpayConfig() 
                         wx.ready(() => { 
                             this._setWxpayInfo(that) 
@@ -284,7 +335,7 @@
                 this.$post(url.baseUrl + '/wxpaySign/js_access',qs.stringify( this.payUrl)).then((res) => {
                         console.log(res)
                         wx.config({
-                            debug: true, 
+                            debug: false, 
                             appId: res.appId,
                             timestamp: res.timestamp, 
                             nonceStr: res.nonceStr, 
@@ -307,19 +358,37 @@
                         if(res.errMsg === "chooseWXPay:ok" ) {
                                 alert(res);
                         }else if(res.errMsg === "chooseWXPay:cancel") {
-                            alert('取消付款');
+                            this.toastMessage = '取消付款。'
+                            this.snackbar = true
+                            if (this.snackTimer) clearTimeout(this.snackTimer)
+                            this.snackTimer = setTimeout(() => { this.snackbar = false }, 2000)
+                            
                         }else if(res.errMsg === "chooseWXPay:fail") {
-                            alert(res);
-                            alert('支付失败');
+                            this.toastMessage = '支付失败'
+                            this.snackbar = true
+                            if (this.snackTimer) clearTimeout(this.snackTimer)
+                            this.snackTimer = setTimeout(() => { this.snackbar = false }, 2000)
+                            
                         }else {
-                            alert('未知异常');
+                            this.toastMessage = '未知异常'
+                            this.snackbar = true
+                            if (this.snackTimer) clearTimeout(this.snackTimer)
+                            this.snackTimer = setTimeout(() => { this.snackbar = false }, 2000)
+                            
                         }
                     }, 
                     cancel() { 
-                        window.alert('支付取消') 
+                        this.toastMessage = '支付取消'
+                        this.snackbar = true
+                        if (this.snackTimer) clearTimeout(this.snackTimer)
+                        this.snackTimer = setTimeout(() => { this.snackbar = false }, 2000)
+                        //window.alert('支付取消') 
                         window.location.reload() 
                     }, error(res) { 
-                        window.alert('支付失败') 
+                        this.toastMessage = '支付失败'
+                        this.snackbar = true
+                        if (this.snackTimer) clearTimeout(this.snackTimer)
+                        this.snackTimer = setTimeout(() => { this.snackbar = false }, 2000)
                         window.location.reload() 
                     } 
                 }) 
@@ -347,7 +416,7 @@
         
     }
     .total-block p:nth-child(1){
-        font-size: 0.5rem;
+        font-size: 0.8rem;
     }
     .total-block p:nth-child(1) span{
         font-size: 1rem;

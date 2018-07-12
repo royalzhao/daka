@@ -15,7 +15,7 @@ Vue.use(Router)
 
 const routes=[
   {
-    path: '/',
+    path: '/show/pay',
     component: index,
     children:[
       {
@@ -24,39 +24,39 @@ const routes=[
         component:main
       },
       {
-        path:'/me',
+        path:'/show/pay/me',
         name:'me',
         component:me
       },
       {
-        path:'/live',
+        path:'/show/pay/live',
         name:'live',
         component:live
       },
       
     ]
   },{
-    path: '/bindPhone',//绑定手机
+    path: '/show/pay/bindPhone',//绑定手机
     name:'bindPhone',
     component: bindPhone
   },{
-    path: '/updatePassword',//修改密码
+    path: '/show/pay/updatePassword',//修改密码
     name:'updatePassword',
     component: updatePassword
   },{
-    path:'/wallet',
+    path:'/show/pay/wallet',
     name:'wallet',
     component:wallet
   },{
-    path:'/personalInfo',
+    path:'/show/pay/personalInfo',
     name:'personalInfo',
     component:personalInfo
   },{
-    path:'/record',
+    path:'/show/pay/record',
     name:'record',
     component:record
   },{
-    path:'/notice',
+    path:'/show/pay/notice',
     name:'notice',
     component:notice
   
@@ -64,6 +64,7 @@ const routes=[
 ];
 
 const router = new Router({
+  //mode:'history',
   routes
 })
 
