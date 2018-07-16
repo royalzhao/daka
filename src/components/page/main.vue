@@ -186,7 +186,7 @@
                 payData:{
                     openid:'',
 					body:'幸运打卡第一期',
-					total_fee:'10'
+					total_fee:'21000'
                 },
                
                 payUrl:{
@@ -356,7 +356,10 @@
                     success(res) { 
                        // 支付成功后的回调函数
                         if(res.errMsg === "chooseWXPay:ok" ) {
-                                alert(res);
+                            let qs = require('qs');
+                            this.$post(url.baseUrl + '/wxpaySign/recharge',qs.stringify( this.payData)).then((res) => {
+                                
+                            }) 
                         }else if(res.errMsg === "chooseWXPay:cancel") {
                             this.toastMessage = '取消付款。'
                             this.snackbar = true

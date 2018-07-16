@@ -43,7 +43,7 @@
               localStorage.setItem('userInfo',JSON.stringify(userInfo));
             
         }).catch(res=>{
-          this.showState = true
+          //this.showState = true
         })
       }
     },

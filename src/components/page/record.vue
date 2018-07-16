@@ -6,30 +6,23 @@
         <p class="noRecord" v-if="show">暂无记录</p>
         <mu-card v-else>
             <ul>
-                <li>
+                <li v-for="item in list">
                     <div class="itemLeft">
-                        <p class="title">提现</p>
-                        <p class="time">2018-05-26 12:42:12</p>
+                        <p class="title">{{item.record_info}}</p>
+                        <p class="time">{{item.time}}</p>
                     </div>
                     <div class="itemRight">
-                        -36.00
+                        {{item.transaction_amount}}
                     </div>
                 </li>
-                <li>
-                    <div class="itemLeft">
-                        <p class="title">提现</p>
-                        <p class="time">2018-05-26 12:42:12</p>
-                    </div>
-                    <div class="itemRight">
-                        -36.00
-                    </div>
-                </li>
+               
             </ul>
         </mu-card>
         
     </div>
 </template>
 <script>
+import url from '@/serviceAPI.config.js'
  export default {
      data(){
          return{
@@ -40,7 +33,25 @@
             ]
          }
      },
+     mounted() {
+        this.init()
+    },
      methods:{
+        init(){
+            this.$post(url.showTransactionRecord).then(res => {
+                console.log(res.length)
+                if(res.length>0){
+                    this.list = res
+                    this.show = false
+                }else{
+                    this.show=true
+                }
+                
+              
+               
+                
+            })
+        },
         RouterOne(){
             this.$router.go(-1);
         },

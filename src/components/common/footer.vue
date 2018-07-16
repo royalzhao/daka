@@ -2,7 +2,7 @@
     <div class="footer">
         <mu-tabs :value="activeTab" @change="handleTabChange">
             <mu-tab value="tab1" icon=":iconfont icon-icon_home" @click="goMain" title="打卡"/>
-            <mu-tab value="tab2" icon=":iconfont icon-xin2" @click="goLive" title="直播"/>
+            <!-- <mu-tab value="tab2" icon=":iconfont icon-xin2" @click="goLive" title="直播"/> -->
             <mu-tab value="tab3" icon=":iconfont icon-ziyuan" @click="goMe" title="我的"/>
         </mu-tabs>
     </div>

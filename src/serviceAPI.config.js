@@ -22,6 +22,8 @@ const URL ={
     showAccountInfo:LOCALURL+'showAccountInfo', //个人信息
     doSign:LOCALURL+'doSign', //打卡
     signInStatistics:LOCALURL2+'signInStatistics', //我的界面显示活动人数和打卡人数等信息
+    showTransactionRecord:LOCALURL+'showTransactionRecord', //我的界面显示活动人数和打卡人数等信息
+    recharge:LOCALURL+'recharge', //报名充值
 }
 
 module.exports = URL

@@ -4,19 +4,23 @@
             <mu-icon-button icon="keyboard_arrow_left" slot="left" @click="RouterOne" />
         </mu-appbar>
         <div class="content">
-            <div v-for="item in notice">
-                <mu-card>
-                    <mu-card-text>
-                        恭喜您在{{item.time}}的抽奖中获得{{item.p_name}},
-                        <span v-if="address">
-                            请完善您的地址信息，我们将马上为您发货
-                        </span>
-                        <span v-else>
-                            请耐心等待，我们将马上为您发货
-                        </span>
-                    </mu-card-text>
-                </mu-card>
+            <p class="noRecord" v-if="show">暂无记录</p>
+            <div class="v-else">
+                <div v-for="item in notice">
+                    <mu-card>
+                        <mu-card-text>
+                            恭喜您在{{item.time}}的抽奖中获得{{item.p_name}},
+                            <span v-if="address">
+                                请完善您的地址信息，我们将马上为您发货
+                            </span>
+                            <span v-else>
+                                请耐心等待，我们将马上为您发货
+                            </span>
+                        </mu-card-text>
+                    </mu-card>
+                </div>
             </div>
+            
             
         </div>
         
@@ -29,7 +33,8 @@
             return{
                 Title_Data:'消息通知',
                 notice:[],
-                address:true
+                address:true,
+                show:false,
             }
         },
         mounted() {
@@ -41,11 +46,17 @@
             },
             init(){
                 this.$fetch(url.checkIsLucky).then(res => {
-                   // console.log(res)
+                    console.log(res)
                   if(res[0].address == 'undefind'){
                       this.address = false
                   }
-                   this.notice = res[0]
+                   
+                   if(res[0].length>0){
+                        this.show = false
+                        this.notice = res[0]
+                   }else{
+                        this.show=true
+                   }
                 })
             },
         }
@@ -60,5 +71,11 @@
 }
 .mu-card{
     margin: 10px 0;
+}
+.noRecord{
+    text-align: center;
+    margin-top: 1rem;
+    color: #999;
+    background: #f9f9f9;
 }
 </style>
