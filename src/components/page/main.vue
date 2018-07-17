@@ -186,7 +186,7 @@
                 payData:{
                     openid:'',
 					body:'幸运打卡第一期',
-					total_fee:'21000'
+					total_fee:'21'
                 },
                
                 payUrl:{
